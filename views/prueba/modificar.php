@@ -2,7 +2,7 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
-$this->title = 'Insertar una nueva película';
+$this->title = 'Modificar una nueva película';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $form->field($peliculasForm, 'duracion') ?>
     <?= $form->field($peliculasForm, 'genero_id') ?>
     <div class="form-group">
-        <?= Html::submitButton('Insertar película', ['class' => 'btn btn-primary']) ?>
+        <?= Html::submitButton('Modificar película', ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Cancelar', ['prueba/listado'], ['class' => 'btn btn-danger']) ?>
     </div>
 <?php ActiveForm::end() ?>

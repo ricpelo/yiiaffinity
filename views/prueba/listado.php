@@ -6,12 +6,21 @@ use yii\helpers\Html;
         <thead>
             <th>Título</th>
             <th>Año</th>
+            <th>Acciones</th>
         </thead>
         <tbody>
             <?php foreach ($filas as $fila): ?>
                 <tr>
                     <td><?= Html::encode($fila['titulo']) ?></td>
                     <td><?= Html::encode($fila['anyo']) ?></td>
+                    <td>
+                        <?= Html::a('Modificar', ['prueba/modificar', 'id' => $fila['id']], ['class' => 'btn-xs btn-info']) ?>
+                        <?= Html::a('Borrar', ['prueba/borrar', 'id' => $fila['id']], [
+                            'class' => 'btn-xs btn-danger',
+                            'data-confirm' => '¿Seguro que desea borrar?',
+                            'data-method' => 'POST',
+                        ]) ?>
+                    </td>
                 </tr>
             <?php endforeach ?>
         </tbody>
