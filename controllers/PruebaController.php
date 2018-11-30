@@ -37,14 +37,8 @@ class PruebaController extends \yii\web\Controller
 
     public function actionModificar($id)
     {
-        $fila = Yii::$app->db
-            ->createCommand('SELECT *
-                               FROM peliculas
-                              WHERE id = :id', [':id' => $id])->queryOne();
-        if ($fila === false) {
-            throw new NotFoundHttpException('Esa película no existe.');
-        }
-        $peliculasForm = new PeliculasForm(['attributes' => $fila]);
+        $peliculasForm = new PeliculasForm(['attributes' => $this->buscarPelicula($id)]);
+
         if ($peliculasForm->load(Yii::$app->request->post()) && $peliculasForm->validate()) {
             Yii::$app->db->createCommand()
                 ->update('peliculas', $peliculasForm->attributes, ['id' => $id])
@@ -54,6 +48,7 @@ class PruebaController extends \yii\web\Controller
 
         return $this->render('modificar', [
             'peliculasForm' => $peliculasForm,
+            'listaGeneros' => $this->listaGeneros(),
         ]);
     }
 
@@ -61,5 +56,27 @@ class PruebaController extends \yii\web\Controller
     {
         Yii::$app->db->createCommand()->delete('peliculas', ['id' => $id])->execute();
         return $this->redirect(['prueba/listado']);
+    }
+
+    private function listaGeneros()
+    {
+        $generos = Yii::$app->db->createCommand('SELECT * FROM generos')->queryAll();
+        $listaGeneros = [];
+        foreach ($generos as $genero) {
+            $listaGeneros[$genero['id']] = $genero['genero'];
+        }
+        return $listaGeneros;
+    }
+
+    private function buscarPelicula($id)
+    {
+        $fila = Yii::$app->db
+            ->createCommand('SELECT *
+                               FROM peliculas
+                              WHERE id = :id', [':id' => $id])->queryOne();
+        if ($fila === false) {
+            throw new NotFoundHttpException('Esa película no existe.');
+        }
+        return $fila;
     }
 }
