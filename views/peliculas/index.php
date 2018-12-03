@@ -1,38 +1,33 @@
 <?php
-
 use yii\helpers\Html;
-use yii\grid\GridView;
-
-/* @var $this yii\web\View */
-/* @var $searchModel app\models\PeliculasSearch */
-/* @var $dataProvider yii\data\ActiveDataProvider */
-
-$this->title = 'Peliculas';
-$this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="peliculas-index">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <p>
-        <?= Html::a('Create Peliculas', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
-            'titulo',
-            'anyo',
-            'sinopsis:ntext',
-            'duracion',
-            //'genero_id',
-
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
-    ]); ?>
+<div class="row">
+    <table class="table table-striped">
+        <thead>
+            <th>Título</th>
+            <th>Año</th>
+            <th>Acciones</th>
+        </thead>
+        <tbody>
+            <?php foreach ($filas as $fila): ?>
+                <tr>
+                    <td><?= Html::encode($fila['titulo']) ?></td>
+                    <td><?= Html::encode($fila['anyo']) ?></td>
+                    <td>
+                        <?= Html::a('Modificar', ['peliculas/update', 'id' => $fila['id']], ['class' => 'btn-xs btn-info']) ?>
+                        <?= Html::a('Borrar', ['peliculas/delete', 'id' => $fila['id']], [
+                            'class' => 'btn-xs btn-danger',
+                            'data-confirm' => '¿Seguro que desea borrar?',
+                            'data-method' => 'POST',
+                        ]) ?>
+                    </td>
+                </tr>
+            <?php endforeach ?>
+        </tbody>
+    </table>
+</div>
+<div class="row">
+    <div class="text-center">
+        <?= Html::a('Insertar película', ['peliculas/create'], ['class' => 'btn btn-info']) ?>
+    </div>
 </div>

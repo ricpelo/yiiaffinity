@@ -2,126 +2,81 @@
 
 namespace app\controllers;
 
-use app\models\Peliculas;
-use app\models\PeliculasSearch;
+use app\models\PeliculasForm;
 use Yii;
-use yii\filters\VerbFilter;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
 /**
- * PeliculasController implements the CRUD actions for Peliculas model.
+ * Definición del controlador peliculas.
  */
-class PeliculasController extends Controller
+class PeliculasController extends \yii\web\Controller
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * Lists all Peliculas models.
-     * @return mixed
-     */
     public function actionIndex()
     {
-        $searchModel = new PeliculasSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
+        $filas = \Yii::$app->db
+            ->createCommand('SELECT * FROM peliculas')->queryAll();
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+            'filas' => $filas,
         ]);
     }
 
-    /**
-     * Displays a single Peliculas model.
-     * @param int $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Creates a new Peliculas model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
     public function actionCreate()
     {
-        $model = new Peliculas();
+        $peliculasForm = new PeliculasForm();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($peliculasForm->load(Yii::$app->request->post()) && $peliculasForm->validate()) {
+            Yii::$app->db->createCommand()
+                ->insert('peliculas', $peliculasForm->attributes)
+                ->execute();
+            return $this->redirect(['peliculas/index']);
         }
-
         return $this->render('create', [
-            'model' => $model,
+            'peliculasForm' => $peliculasForm,
         ]);
     }
 
-    /**
-     * Updates an existing Peliculas model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param int $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        $peliculasForm = new PeliculasForm(['attributes' => $this->buscarPelicula($id)]);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($peliculasForm->load(Yii::$app->request->post()) && $peliculasForm->validate()) {
+            Yii::$app->db->createCommand()
+                ->update('peliculas', $peliculasForm->attributes, ['id' => $id])
+                ->execute();
+            return $this->redirect(['peliculas/index']);
         }
 
         return $this->render('update', [
-            'model' => $model,
+            'peliculasForm' => $peliculasForm,
+            'listaGeneros' => $this->listaGeneros(),
         ]);
     }
 
-    /**
-     * Deletes an existing Peliculas model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param int $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        Yii::$app->db->createCommand()->delete('peliculas', ['id' => $id])->execute();
+        return $this->redirect(['peliculas/index']);
     }
 
-    /**
-     * Finds the Peliculas model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param int $id
-     * @return Peliculas the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
+    private function listaGeneros()
     {
-        if (($model = Peliculas::findOne($id)) !== null) {
-            return $model;
+        $generos = Yii::$app->db->createCommand('SELECT * FROM generos')->queryAll();
+        $listaGeneros = [];
+        foreach ($generos as $genero) {
+            $listaGeneros[$genero['id']] = $genero['genero'];
         }
+        return $listaGeneros;
+    }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+    private function buscarPelicula($id)
+    {
+        $fila = Yii::$app->db
+            ->createCommand('SELECT *
+                               FROM peliculas
+                              WHERE id = :id', [':id' => $id])->queryOne();
+        if ($fila === false) {
+            throw new NotFoundHttpException('Esa película no existe.');
+        }
+        return $fila;
     }
 }
