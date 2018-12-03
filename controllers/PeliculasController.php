@@ -11,6 +11,12 @@ use yii\web\NotFoundHttpException;
  */
 class PeliculasController extends \yii\web\Controller
 {
+    public function actionPrueba()
+    {
+        Yii::$app->session->setFlash('error', 'Esto es un error.');
+        return $this->redirect(['peliculas/index']);
+    }
+
     public function actionIndex()
     {
         $filas = \Yii::$app->db
