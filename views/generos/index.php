@@ -1,5 +1,6 @@
 <?php
 use yii\helpers\Html;
+use yii\widgets\LinkPager;
 ?>
 <table class="table table-striped">
     <thead>
@@ -25,6 +26,13 @@ use yii\helpers\Html;
         <?php endforeach ?>
     </tbody>
 </table>
+
+<div class="row">
+    <div class="text-center">
+        <?= LinkPager::widget(['pagination' => $pagination]) ?>
+    </div>
+</div>
+
 <div class="row">
     <div class="text-center">
         <?= Html::a('Insertar un nuevo género', ['generos/create'], ['class' => 'btn btn-info']) ?>
