@@ -52,6 +52,25 @@ class GenerosController extends Controller
         ]);
     }
 
+    public function actionDelete($id)
+    {
+        $fila = Yii::$app->db
+            ->createCommand('SELECT id
+                               FROM peliculas
+                              WHERE genero_id = :id
+                              LIMIT 1', ['id' => $id])
+            ->queryOne();
+        if (!empty($fila)) {
+            Yii::$app->session->setFlash('error', 'Hay películas de ese género.');
+        } else {
+            Yii::$app->db->createCommand()
+            ->delete('generos', ['id' => $id])
+            ->execute();
+            Yii::$app->session->setFlash('success', 'Género borrado correctamente.');
+        }
+        return $this->redirect(['generos/index']);
+    }
+
     private function buscarGenero($id)
     {
         $genero = Yii::$app->db
@@ -59,7 +78,7 @@ class GenerosController extends Controller
                                FROM generos
                               WHERE id = :id', [':id' => $id])
             ->queryOne();
-        if ($genero === false) {
+        if (empty($genero)) {
             throw new NotFoundHttpException('El género no existe.');
         }
         return $genero;

@@ -10,7 +10,17 @@ use yii\helpers\Html;
         <?php foreach ($filas as $fila): ?>
             <tr>
                 <td><?= Html::encode($fila['genero']) ?></td>
-                <td><?= Html::a('Modificar', ['generos/update', 'id' => $fila['id']], ['class' => 'btn-xs btn-info']) ?></td>
+                <td>
+                    <?= Html::a('Modificar', ['generos/update', 'id' => $fila['id']], ['class' => 'btn-xs btn-info']) ?>
+                    <?= Html::a(
+                        'Borrar',
+                        ['generos/delete', 'id' => $fila['id']],
+                        [
+                            'class' => 'btn-xs btn-danger',
+                            'data-confirm' => '¿Seguro que desea borrar el género?',
+                            'data-method' => 'POST',
+                        ]) ?>
+                </td>
             </tr>
         <?php endforeach ?>
     </tbody>
