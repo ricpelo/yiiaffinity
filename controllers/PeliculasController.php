@@ -14,7 +14,7 @@ class PeliculasController extends \yii\web\Controller
     public function actionIndex()
     {
         $filas = \Yii::$app->db
-            ->createCommand('SELECT * FROM peliculas')->queryAll();
+            ->createCommand('SELECT * FROM peliculas JOIN generos g ON genero_id=g.id')->queryAll();
         return $this->render('index', [
             'filas' => $filas,
         ]);
@@ -33,6 +33,7 @@ class PeliculasController extends \yii\web\Controller
         }
         return $this->render('create', [
             'peliculasForm' => $peliculasForm,
+            'listaGeneros' => $this->listaGeneros(),
         ]);
     }
 

@@ -8,14 +8,20 @@ $this->params['breadcrumbs'][] = $this->title;
     <table class="table table-striped">
         <thead>
             <th>Título</th>
+            <th>Sinopsis</th>
+            <th>Duración</th>
             <th>Año</th>
+            <th>Género</th>
             <th>Acciones</th>
         </thead>
         <tbody>
             <?php foreach ($filas as $fila): ?>
                 <tr>
                     <td><?= Html::encode($fila['titulo']) ?></td>
+                    <td><?= Html::encode($fila['sinopsis']) ?></td>
+                    <td><?= Html::encode($fila['duracion']) ?></td>
                     <td><?= Html::encode($fila['anyo']) ?></td>
+                    <td><?= Html::encode($fila['genero']) ?></td>
                     <td>
                         <?= Html::a('Modificar', ['peliculas/update', 'id' => $fila['id']], ['class' => 'btn-xs btn-info']) ?>
                         <?= Html::a('Borrar', ['peliculas/delete', 'id' => $fila['id']], [

@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\GenerosForm;
 use Yii;
+use yii\data\Pagination;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -13,10 +14,28 @@ class GenerosController extends \yii\web\Controller
 {
     public function actionIndex()
     {
+        $count = Yii::$app->db
+        ->createCommand('SELECT count(*) FROM generos')
+        ->queryScalar();
+
+        $pagination = new Pagination([
+            'defaultPageSize' => 5,
+            'totalCount' => $count,
+        ]);
+
         $filas = \Yii::$app->db
-            ->createCommand('SELECT * FROM generos')->queryAll();
+            ->createCommand('SELECT *
+                               FROM generos
+                           ORDER BY genero
+                              LIMIT :limit
+                             OFFSET :offset', [
+                                 ':limit' => $pagination->limit,
+                                 ':offset' => $pagination->offset,
+                             ])
+            ->queryAll();
         return $this->render('index', [
             'filas' => $filas,
+            'pagination' => $pagination,
         ]);
     }
 
@@ -56,9 +75,11 @@ class GenerosController extends \yii\web\Controller
 
     public function actionDelete($id)
     {
-        $peliculas = Yii::$app->db->createCommand('SELECT *
-            FROM peliculas p JOIN generos g ON genero_id=g.id
-            WHERE genero_id = :id', [':id' => $id])->queryAll();
+        $peliculas = Yii::$app->db
+        ->createCommand('SELECT id
+                           FROM peliculas
+                          WHERE genero_id = :id
+                          LIMIT 1', [':id' => $id])->queryOne();
         if (empty($peliculas)) {
             Yii::$app->session->setFlash('success', 'Fila borrada correctamente');
             Yii::$app->db->createCommand()->delete('generos', ['id' => $id])->execute();
@@ -84,7 +105,7 @@ class GenerosController extends \yii\web\Controller
             ->createCommand('SELECT *
                                FROM generos
                               WHERE id = :id', [':id' => $id])->queryOne();
-        if ($fila === false) {
+        if (empty($fila)) {
             throw new NotFoundHttpException('Esa genero no existe.');
         }
         return $fila;
