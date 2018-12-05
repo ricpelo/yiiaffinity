@@ -9,5 +9,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $form->field($generosForm, 'genero') ?>
     <div class="form-group">
         <?= Html::submitButton('Insertar', ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Cancelar', ['generos/index'], ['class' => 'btn btn-danger']) ?>
     </div>
 <?php ActiveForm::end() ?>
