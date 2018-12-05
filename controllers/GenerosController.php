@@ -5,15 +5,61 @@ namespace app\controllers;
 use app\models\GenerosForm;
 use Yii;
 use yii\data\Pagination;
+use yii\data\Sort;
+use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 
 /**
  * Definición del controlador generos.
  */
 class GenerosController extends \yii\web\Controller
 {
+    public function behaviors()
+    {
+        return [
+            'verbs' => [
+                'class' => \yii\filters\VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['update', 'delete'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Muestra la lista de generos paginada.
+     * @return string La vista del listado de géneros
+     */
     public function actionIndex()
     {
+        // TODO: Ordenacion
+        $sort = new Sort([
+            'attributes' => [
+                'genero',
+            ],
+        ]);
+
+        if (empty($sort->orders)) {
+            $orderBy = 1;
+        } else {
+            $res = [];
+            foreach ($sort->orders as $columna => $sentido) {
+                $res[] = $sentido == SORT_ASC ? "$columna ASC" : "$columna DESC";
+            }
+            $orderBy = implode(',', $res);
+        }
+
         $count = Yii::$app->db
         ->createCommand('SELECT count(*) FROM generos')
         ->queryScalar();
@@ -39,6 +85,10 @@ class GenerosController extends \yii\web\Controller
         ]);
     }
 
+    /**
+     * Crea un nuevo género.
+     * @return string|Response El formulario de modificacion o una redirección
+     */
     public function actionCreate()
     {
         $generosForm = new GenerosForm();
@@ -55,9 +105,14 @@ class GenerosController extends \yii\web\Controller
         ]);
     }
 
+    /**
+     * Modifica un género.
+     * @param  int              $id El ID del genero a modificar
+     * @return string|Response      El formulario de modificacion o una redirección
+     */
     public function actionUpdate($id)
     {
-        $generosForm = new GenerosForm(['attributes' => $this->buscarPelicula($id)]);
+        $generosForm = new GenerosForm(['attributes' => $this->buscarGenero($id)]);
 
         if ($generosForm->load(Yii::$app->request->post()) && $generosForm->validate()) {
             Yii::$app->db->createCommand()
@@ -73,6 +128,11 @@ class GenerosController extends \yii\web\Controller
         ]);
     }
 
+    /**
+     * Borra un género.
+     * @param  int      $id El id del género a borrar.
+     * @return Response     Una redirección.
+     */
     public function actionDelete($id)
     {
         $peliculas = Yii::$app->db
@@ -89,6 +149,10 @@ class GenerosController extends \yii\web\Controller
         return $this->redirect(['generos/index']);
     }
 
+    /**
+     * Lista de todos los géneros.
+     * @return array Devuelve un array con la tabla generos.
+     */
     private function listaGeneros()
     {
         $generos = Yii::$app->db->createCommand('SELECT * FROM generos')->queryAll();
@@ -99,7 +163,13 @@ class GenerosController extends \yii\web\Controller
         return $listaGeneros;
     }
 
-    private function buscarPelicula($id)
+    /**
+     * Busca un género.
+     * @param  int                  $id El id de la pelicula a buscar.
+     * @return array                    Devuelve el genero si existe.
+     * @throws NotFoundHttpException    Si el genero no existe.
+     */
+    private function buscarGenero($id)
     {
         $fila = Yii::$app->db
             ->createCommand('SELECT *

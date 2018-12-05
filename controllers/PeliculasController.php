@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\PeliculasForm;
 use Yii;
 use yii\data\Pagination;
+use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -12,6 +13,28 @@ use yii\web\NotFoundHttpException;
  */
 class PeliculasController extends \yii\web\Controller
 {
+    public function behaviors()
+    {
+        return [
+            'verbs' => [
+                'class' => \yii\filters\VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['update', 'delete'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
+    }
+
     public function actionIndex()
     {
         $count = Yii::$app->db
@@ -23,8 +46,8 @@ class PeliculasController extends \yii\web\Controller
             'totalCount' => $count,
         ]);
 
-        $filas = \Yii::$app->db
-            ->createCommand('SELECT *
+        $filas = Yii::$app->db
+            ->createCommand('SELECT p.*, g.genero
                                FROM peliculas p JOIN generos g ON genero_id=g.id
                            ORDER BY p.id
                               LIMIT :limit
