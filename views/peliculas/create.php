@@ -3,6 +3,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 $this->title = 'Insertar una nueva película';
+$this->params['breadcrumbs'][] = ['label' => 'Películas', 'url' => ['peliculas/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 

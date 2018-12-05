@@ -3,6 +3,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 $this->title = 'Modificar un género';
+$this->params['breadcrumbs'][] = ['label' => 'Géneros', 'url' => ['generos/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
