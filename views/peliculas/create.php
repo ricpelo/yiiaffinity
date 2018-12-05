@@ -9,6 +9,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php $form = ActiveForm::begin() ?>
     <?= $form->field($peliculasForm, 'titulo') ?>
     <?= $form->field($peliculasForm, 'anyo') ?>
+    <?= $form->field($peliculasForm, 'sinopsis')->textarea() ?>
     <?= $form->field($peliculasForm, 'duracion') ?>
     <?= $form->field($peliculasForm, 'genero_id') ?>
     <div class="form-group">
