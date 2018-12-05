@@ -9,6 +9,7 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 
 class GenerosController extends Controller
 {
@@ -34,6 +35,10 @@ class GenerosController extends Controller
         ];
     }
 
+    /**
+     * Listado de géneros.
+     * @return string La vista del listado de géneros
+     */
     public function actionIndex()
     {
         $count = Yii::$app->db
@@ -78,6 +83,11 @@ class GenerosController extends Controller
         ]);
     }
 
+    /**
+     * Modifica un género.
+     * @param  int             $id El id del género a modificar
+     * @return string|Response     El formulario de modificación o una redirección
+     */
     public function actionUpdate($id)
     {
         $genero = $this->buscarGenero($id);
@@ -94,6 +104,11 @@ class GenerosController extends Controller
         ]);
     }
 
+    /**
+     * Borra un género.
+     * @param  int      $id El id del género a borrar
+     * @return Response     Una redirección
+     */
     public function actionDelete($id)
     {
         $fila = Yii::$app->db
@@ -113,6 +128,12 @@ class GenerosController extends Controller
         return $this->redirect(['generos/index']);
     }
 
+    /**
+     * Localiza un género por su id.
+     * @param  int                   $id El id del género
+     * @return array                     El género si existe
+     * @throws NotFoundHttpException     Si el género no existe
+     */
     private function buscarGenero($id)
     {
         $genero = Yii::$app->db
