@@ -43,11 +43,10 @@ class GenerosController extends \yii\web\Controller
      */
     public function actionIndex()
     {
-        // TODO: Ordenacion
         $sort = new Sort([
             'attributes' => [
-                'genero',
-                'cantidad',
+                'genero' => ['label' => 'Género'],
+                'cantidad' => ['label' => 'Cantidad'],
             ],
         ]);
 

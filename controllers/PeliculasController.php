@@ -40,10 +40,10 @@ class PeliculasController extends \yii\web\Controller
     {
         $sort = new Sort([
            'attributes' => [
-               'titulo',
-               'anyo',
-               'duracion',
-               'genero',
+               'titulo' => ['label' => 'Título'],
+               'anyo' => ['label' => 'Año'],
+               'duracion' => ['label' => 'Duración'],
+               'genero' => ['label' => 'Género'],
            ],
         ]);
         if (empty($sort->orders)) {
@@ -78,6 +78,14 @@ class PeliculasController extends \yii\web\Controller
             'filas' => $filas,
             'sort' => $sort,
             'pagination' => $pagination,
+        ]);
+    }
+
+    public function actionVer($id)
+    {
+        return $this->render('ver', [
+            'pelicula' => $this->buscarPelicula($id),
+            'participantes' => $this->buscarParticipante($id),
         ]);
     }
 
@@ -143,5 +151,18 @@ class PeliculasController extends \yii\web\Controller
             throw new NotFoundHttpException('Esa película no existe.');
         }
         return $fila;
+    }
+
+    private function buscarParticipante($id)
+    {
+        return Yii::$app->db
+        ->createCommand('SELECT pa.*, nombre, rol
+                        FROM participantes pa
+                        JOIN roles r
+                        ON rol_id = r.id
+                        JOIN personas p
+                        ON persona_id = p.id
+                        WHERE pelicula_id = :id', [':id' => $id])
+        ->queryAll();
     }
 }
