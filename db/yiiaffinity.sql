@@ -35,26 +35,30 @@ CREATE TABLE usuarios
 );
 
 DROP TABLE IF EXISTS personas CASCADE;
+
 CREATE TABLE personas
 (
-    id      BIGSERIAL       PRIMARY KEY,
-    nombre  VARCHAR(255)    NOT NULL UNIQUE
+    id     BIGSERIAL    PRIMARY KEY
+  , nombre VARCHAR(255) NOT NULL
 );
 
 DROP TABLE IF EXISTS roles CASCADE;
+
 CREATE TABLE roles
 (
-    id      BIGSERIAL       PRIMARY KEY,
-    rol     VARCHAR(255)    NOT NULL UNIQUE
+    id  BIGSERIAL    PRIMARY KEY
+  , rol VARCHAR(255) NOT NULL UNIQUE
 );
 
 DROP TABLE IF EXISTS participantes CASCADE;
+
 CREATE TABLE participantes
 (
-    pelicula_id     BIGINT  REFERENCES peliculas(id),
-    persona_id      BIGINT  REFERENCES persona(id),
-    rol_id          BIGINT  REFERENCES roles(id),
-    PRIMARY KEY (pelicula_id, persona_id, rol_id)
+    id          BIGSERIAL PRIMARY KEY
+  , pelicula_id BIGINT    NOT NULL REFERENCES peliculas (id)
+  , persona_id  BIGINT    NOT NULL REFERENCES personas (id)
+  , rol_id      BIGINT    NOT NULL REFERENCES roles (id)
+  , UNIQUE (pelicula_id, persona_id, rol_id)
 );
 
 -- INSERT
@@ -75,8 +79,17 @@ VALUES ('Los últimos Jedi', 2017, 'Va uno y se cae...', 204, 3)
      , ('Los Goonies', 1985, 'Unos niños encuentran un tesoro', 120, 5)
      , ('Aquí llega Condemor', 1996, 'Mejor no cuento nada...', 90, 1);
 
+INSERT INTO personas (nombre)
+VALUES ('Silverster Stallone')
+     , ('Chiquito de la Calzada');
 
-INSERT INTO peliculas (titulo, anyo, sinopsis, duracion, genero_id)
-VALUES ('Los últimos Jedi', 2017, 'Va uno y se cae...', 204, 3)
-     , ('Los Goonies', 1985, 'Unos niños encuentran un tesoro', 120, 5)
-     , ('Aquí llega Condemor', 1996, 'Mejor no cuento nada...', 90, 1);
+INSERT INTO roles (rol)
+VALUES ('Director')
+     , ('Productor')
+     , ('Intérprete');
+
+INSERT INTO participantes (pelicula_id, persona_id, rol_id)
+VALUES (1, 1, 3)
+     , (1, 2, 2)
+     , (2, 2, 1)
+     , (3, 1, 1);
