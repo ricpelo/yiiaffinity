@@ -80,6 +80,7 @@ class PeliculasController extends \yii\web\Controller
         return $this->render('update', [
             'peliculasForm' => $peliculasForm,
             'listaGeneros' => $this->listaGeneros(),
+            'participantes' => $this->buscarParticipantes($id),
         ]);
     }
 
@@ -87,6 +88,14 @@ class PeliculasController extends \yii\web\Controller
     {
         Yii::$app->db->createCommand()->delete('peliculas', ['id' => $id])->execute();
         return $this->redirect(['peliculas/index']);
+    }
+
+    public function actionVer($id)
+    {
+        return $this->render('ver', [
+            'pelicula' => $this->buscarPelicula($id),
+            'participantes' => $this->buscarParticipantes($id),
+        ]);
     }
 
     private function listaGeneros()
@@ -102,12 +111,27 @@ class PeliculasController extends \yii\web\Controller
     private function buscarPelicula($id)
     {
         $fila = Yii::$app->db
-            ->createCommand('SELECT *
-                               FROM peliculas
-                              WHERE id = :id', [':id' => $id])->queryOne();
+            ->createCommand('SELECT p.*, genero
+                               FROM peliculas p
+                               JOIN generos g
+                                 ON genero_id = g.id
+                              WHERE p.id = :id', [':id' => $id])->queryOne();
         if ($fila === false) {
             throw new NotFoundHttpException('Esa película no existe.');
         }
         return $fila;
+    }
+
+    private function buscarParticipantes($id)
+    {
+        return Yii::$app->db
+            ->createCommand('SELECT pa.*, nombre, rol
+                               FROM participantes pa
+                               JOIN roles r
+                                 ON rol_id = r.id
+                               JOIN personas p
+                                 ON persona_id = p.id
+                              WHERE pelicula_id = :id', [':id' => $id])
+            ->queryAll();
     }
 }

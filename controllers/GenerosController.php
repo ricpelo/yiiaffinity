@@ -51,8 +51,11 @@ class GenerosController extends Controller
         ]);
 
         $filas = Yii::$app->db
-            ->createCommand('SELECT *
-                               FROM generos
+            ->createCommand('SELECT g.*, count(p.id) AS cantidad
+                               FROM generos g
+                          LEFT JOIN peliculas p
+                                 ON g.id = p.genero_id
+                           GROUP BY g.id
                            ORDER BY genero
                               LIMIT :limit
                              OFFSET :offset', [

@@ -18,9 +18,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 <td><?= Html::encode($fila['titulo']) ?></td>
                 <td><?= Html::encode($fila['anyo']) ?></td>
                 <td><?= Html::encode($fila['duracion']) ?></td>
-                <td><?= Html::encode($fila['genero']) ?></td>
+                <td><?= Html::a(Html::encode($fila['genero']), ['generos/update', 'id' => $fila['genero_id']]) ?></td>
                 <td>
                     <?= Html::a('Modificar', ['peliculas/update', 'id' => $fila['id']], ['class' => 'btn-xs btn-info']) ?>
+                    <?= Html::a('Ver', ['peliculas/ver', 'id' => $fila['id']], ['class' => 'btn-xs btn-warning']) ?>
                     <?= Html::a('Borrar', ['peliculas/delete', 'id' => $fila['id']], [
                         'class' => 'btn-xs btn-danger',
                         'data-confirm' => '¿Seguro que desea borrar?',

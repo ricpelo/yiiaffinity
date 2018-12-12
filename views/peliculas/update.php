@@ -16,3 +16,20 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Cancelar', ['peliculas/index'], ['class' => 'btn btn-danger']) ?>
     </div>
 <?php ActiveForm::end() ?>
+
+<table class="table">
+    <thead>
+        <th>Nombre</th>
+        <th>Rol</th>
+        <th>Acciones</th>
+    </thead>
+    <tbody>
+        <?php foreach ($participantes as $participante): ?>
+            <tr>
+                <td><?= Html::encode($participante['nombre']) ?></td>
+                <td><?= Html::encode($participante['rol']) ?></td>
+                <td><?= Html::a('Quitar', ['participantes/quitar', 'id' => $participante['id']], ['class' => 'btn-xs btn-danger']) ?></td>
+            </tr>
+        <?php endforeach ?>
+    </tbody>
+</table>
