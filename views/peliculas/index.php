@@ -15,6 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <h1>Listado de películas</h1>
 <table class="table table-striped">
     <thead>
+        <th>#</th>
         <th><?= $sort->link('titulo') ?></th>
         <th><?= $sort->link('anyo') ?></th>
         <th><?= $sort->link('duracion') ?></th>
@@ -22,8 +23,13 @@ $this->params['breadcrumbs'][] = $this->title;
         <th>Acciones</th>
     </thead>
     <tbody>
+        <?php
+        $i = 1;
+        $total = 0;
+        ?>
         <?php foreach ($filas as $fila): ?>
             <tr>
+                <td><?= $i++ ?></td>
                 <td><?= Html::a(Html::encode($fila['titulo']), ['peliculas/ver', 'id' => $fila['id']]) ?></td>
                 <td><?= Html::encode($fila['anyo']) ?></td>
                 <td><?= Html::encode($fila['duracion']) ?></td>
@@ -37,7 +43,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]) ?>
                 </td>
             </tr>
+            <?php $total += $fila['duracion'] ?>
         <?php endforeach ?>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><?= Html::encode($total) ?></td>
+        </tr>
     </tbody>
 </table>
 <div class="row">
