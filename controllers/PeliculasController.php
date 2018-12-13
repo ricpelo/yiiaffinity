@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\BuscarForm;
 use app\models\PeliculasForm;
 use Yii;
 use yii\data\Sort;
@@ -39,15 +40,37 @@ class PeliculasController extends \yii\web\Controller
             $orderBy = implode(',', $res);
         }
 
+        $buscarForm = new BuscarForm();
+
+        $where = [];
+        $execute = [];
+
+        if ($buscarForm->load(Yii::$app->request->post()) && $buscarForm->validate()) {
+            if ($buscarForm->titulo !== '') {
+                $where[] = 'titulo ILIKE :titulo';
+                $execute[':titulo'] = '%' . $buscarForm->titulo . '%';
+            }
+            if ($buscarForm->genero_id !== '') {
+                $where[] = 'p.genero_id = :genero_id';
+                $execute[':genero_id'] = $buscarForm->genero_id;
+            }
+        }
+
+        $where = empty($where) ? '' : 'WHERE ' . implode(' AND ', $where);
+
         $filas = \Yii::$app->db
             ->createCommand("SELECT p.*, g.genero
                                FROM peliculas p
                                JOIN generos g
                                  ON p.genero_id = g.id
-                           ORDER BY $orderBy")->queryAll();
+                             $where
+                           ORDER BY $orderBy", $execute)->queryAll();
+
         return $this->render('index', [
             'filas' => $filas,
             'sort' => $sort,
+            'listaGeneros' => ['' => ''] + $this->listaGeneros(),
+            'buscarForm' => $buscarForm,
         ]);
     }
 

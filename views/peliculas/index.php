@@ -1,8 +1,17 @@
 <?php
 use yii\helpers\Html;
+use yii\widgets\ActiveForm;
 $this->title = 'Listado de películas';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<?php $form = ActiveForm::begin() ?>
+    <?= $form->field($buscarForm, 'titulo') ?>
+    <?= $form->field($buscarForm, 'genero_id')->dropDownList($listaGeneros) ?>
+    <div class="form-group">
+        <?= Html::submitButton('Buscar', ['class' => 'btn btn-primary']) ?>
+    </div>
+<?php ActiveForm::end() ?>
+
 <h1>Listado de películas</h1>
 <table class="table table-striped">
     <thead>
