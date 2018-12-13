@@ -15,6 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <td><?= Html::encode($fila['genero']) ?></td>
                 <td>
                     <?= Html::a('Modificar', ['generos/update', 'id' => $fila['id']], ['class' => 'btn-xs btn-info']) ?>
+                    <?= Html::a('Ver', ['generos/ver', 'id' => $fila['id']], ['class' => 'btn-xs btn-warning']) ?>
                     <?= Html::a(
                         'Borrar',
                         ['generos/delete', 'id' => $fila['id']],

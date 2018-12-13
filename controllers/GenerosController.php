@@ -83,6 +83,20 @@ class GenerosController extends Controller
         ]);
     }
 
+    public function actionVer($id)
+    {
+        $genero = $this->buscarGenero($id);
+        $peliculas = Yii::$app->db
+            ->createCommand('SELECT *
+                               FROM peliculas
+                              WHERE genero_id = :id', [':id' => $id])
+            ->queryAll();
+        return $this->render('ver', [
+            'genero' => $genero,
+            'peliculas' => $peliculas,
+        ]);
+    }
+
     /**
      * Modifica un género.
      * @param  int             $id El id del género a modificar
