@@ -89,6 +89,20 @@ class PeliculasController extends \yii\web\Controller
         ]);
     }
 
+    public function actionVer($id)
+    {
+        $peliculasForm = new PeliculasForm(['attributes' => $this->buscarPelicula($id)]);
+        $peliculasForm->genero_id = Yii::$app->db
+            ->createCommand('SELECT genero
+                               FROM generos
+                              WHERE id = :id', [':id' => $peliculasForm->genero_id])
+            ->queryScalar();
+
+        return $this->render('ver', [
+            'peliculasForm' => $peliculasForm,
+        ]);
+    }
+
     public function actionUpdate($id)
     {
         $peliculasForm = new PeliculasForm(['attributes' => $this->buscarPelicula($id)]);
