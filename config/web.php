@@ -52,14 +52,14 @@ $config = [
         'formatter' => [
             'timeZone' => 'Europe/Madrid',
         ],
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                'generos' => 'generos/index',
+                'generos/update/<id:\d+>' => 'generos/update',
             ],
         ],
-        */
     ],
     'params' => $params,
 ];
