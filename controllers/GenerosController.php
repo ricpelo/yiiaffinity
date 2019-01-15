@@ -41,25 +41,20 @@ class GenerosController extends Controller
      */
     public function actionIndex()
     {
-        $count = Yii::$app->db
-            ->createCommand('SELECT count(*) FROM generos')
-            ->queryScalar();
+        $count = (new \yii\db\Query())->from('generos')->count();
 
         $pagination = new Pagination([
             'defaultPageSize' => 5,
             'totalCount' => $count,
         ]);
 
-        $filas = Yii::$app->db
-            ->createCommand('SELECT *
-                               FROM generos
-                           ORDER BY genero
-                              LIMIT :limit
-                             OFFSET :offset', [
-                ':limit' => $pagination->limit,
-                ':offset' => $pagination->offset,
-            ])
-            ->queryAll();
+        $filas = (new \yii\db\Query())
+            ->from('generos')
+            ->orderBy('genero')
+            ->limit($pagination->limit)
+            ->offset($pagination->offset)
+            ->all();
+
         return $this->render('index', [
             'filas' => $filas,
             'pagination' => $pagination,
@@ -86,11 +81,12 @@ class GenerosController extends Controller
     public function actionVer($id)
     {
         $genero = $this->buscarGenero($id);
-        $peliculas = Yii::$app->db
-            ->createCommand('SELECT *
-                               FROM peliculas
-                              WHERE genero_id = :id', [':id' => $id])
-            ->queryAll();
+
+        $peliculas = (new \yii\db\Query())
+            ->from('peliculas')
+            ->where(['genero_id' => $id])
+            ->all();
+
         return $this->render('ver', [
             'genero' => $genero,
             'peliculas' => $peliculas,
@@ -125,12 +121,12 @@ class GenerosController extends Controller
      */
     public function actionDelete($id)
     {
-        $fila = Yii::$app->db
-            ->createCommand('SELECT id
-                               FROM peliculas
-                              WHERE genero_id = :id
-                              LIMIT 1', ['id' => $id])
-            ->queryOne();
+        $fila = (new \yii\db\Query())
+            ->select('id')
+            ->from('peliculas')
+            ->where(['genero_id' => $id])
+            ->limit(1)
+            ->one();
         if (!empty($fila)) {
             Yii::$app->session->setFlash('error', 'Hay películas de ese género.');
         } else {
@@ -150,11 +146,10 @@ class GenerosController extends Controller
      */
     private function buscarGenero($id)
     {
-        $genero = Yii::$app->db
-            ->createCommand('SELECT *
-                               FROM generos
-                              WHERE id = :id', [':id' => $id])
-            ->queryOne();
+        $genero = (new \yii\db\Query())
+            ->from('generos')
+            ->where(['id' => $id])
+            ->one();
         if (empty($genero)) {
             throw new NotFoundHttpException('El género no existe.');
         }

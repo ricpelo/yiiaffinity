@@ -30,44 +30,26 @@ class PeliculasController extends \yii\web\Controller
             ],
         ]);
 
-        if (empty($sort->orders)) {
-            $orderBy = '1';
-        } else {
-            $res = [];
-            foreach ($sort->orders as $columna => $sentido) {
-                $res[] = $sentido == SORT_ASC ? "$columna ASC" : "$columna DESC";
-            }
-            $orderBy = implode(',', $res);
-        }
-
         $buscarForm = new BuscarForm();
 
-        $where = [];
-        $execute = [];
+        $query = (new \yii\db\Query())
+            ->select(['p.*', 'g.genero'])
+            ->from('peliculas p')
+            ->innerJoin('generos g', 'p.genero_id = g.id');
 
         if ($buscarForm->load(Yii::$app->request->post()) && $buscarForm->validate()) {
-            if ($buscarForm->titulo !== '') {
-                $where[] = 'titulo ILIKE :titulo';
-                $execute[':titulo'] = '%' . $buscarForm->titulo . '%';
-            }
-            if ($buscarForm->genero_id !== '') {
-                $where[] = 'p.genero_id = :genero_id';
-                $execute[':genero_id'] = $buscarForm->genero_id;
-            }
+            $query->andFilterWhere(['ilike', 'titulo', $buscarForm->titulo]);
+            $query->andFilterWhere(['p.genero_id' => $buscarForm->genero_id]);
         }
 
-        $where = empty($where) ? '' : 'WHERE ' . implode(' AND ', $where);
-
-        $filas = \Yii::$app->db
-            ->createCommand("SELECT p.*, g.genero
-                               FROM peliculas p
-                               JOIN generos g
-                                 ON p.genero_id = g.id
-                             $where
-                           ORDER BY $orderBy", $execute)->queryAll();
+        if (empty($sort->orders)) {
+            $query->orderBy(['p.id' => SORT_ASC]);
+        } else {
+            $query->orderBy($sort->orders);
+        }
 
         return $this->render('index', [
-            'filas' => $filas,
+            'filas' => $query->all(),
             'sort' => $sort,
             'listaGeneros' => ['' => ''] + $this->listaGeneros(),
             'buscarForm' => $buscarForm,
@@ -92,11 +74,11 @@ class PeliculasController extends \yii\web\Controller
     public function actionVer($id)
     {
         $peliculasForm = new PeliculasForm(['attributes' => $this->buscarPelicula($id)]);
-        $peliculasForm->genero_id = Yii::$app->db
-            ->createCommand('SELECT genero
-                               FROM generos
-                              WHERE id = :id', [':id' => $peliculasForm->genero_id])
-            ->queryScalar();
+        $peliculasForm->genero_id = (new \yii\db\Query())
+            ->select('genero')
+            ->from('generos')
+            ->where(['id' => $peliculasForm->genero_id])
+            ->scalar();
 
         return $this->render('ver', [
             'peliculasForm' => $peliculasForm,
@@ -128,20 +110,19 @@ class PeliculasController extends \yii\web\Controller
 
     private function listaGeneros()
     {
-        $generos = Yii::$app->db->createCommand('SELECT * FROM generos')->queryAll();
-        $listaGeneros = [];
-        foreach ($generos as $genero) {
-            $listaGeneros[$genero['id']] = $genero['genero'];
-        }
-        return $listaGeneros;
+        return (new \yii\db\Query())
+            ->select('genero')
+            ->from('generos')
+            ->indexBy('id')
+            ->column();
     }
 
     private function buscarPelicula($id)
     {
-        $fila = Yii::$app->db
-            ->createCommand('SELECT *
-                               FROM peliculas
-                              WHERE id = :id', [':id' => $id])->queryOne();
+        $fila = (new \yii\db\Query())
+            ->from('peliculas')
+            ->where(['id' => $id])
+            ->one();
         if ($fila === false) {
             throw new NotFoundHttpException('Esa película no existe.');
         }
