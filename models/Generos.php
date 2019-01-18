@@ -2,8 +2,6 @@
 
 namespace app\models;
 
-use Yii;
-
 /**
  * This is the model class for table "generos".
  *
@@ -29,6 +27,7 @@ class Generos extends \yii\db\ActiveRecord
     {
         return [
             [['genero'], 'required'],
+            [['genero'], 'trim'],
             [['genero'], 'string', 'max' => 255],
             [['genero'], 'unique'],
         ];

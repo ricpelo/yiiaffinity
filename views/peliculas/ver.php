@@ -12,7 +12,7 @@ $inputOptions = [
 ];
 ?>
 
-<?php $form = ActiveForm::begin() ?>
+<?php $form = ActiveForm::begin(['enableClientValidation' => false]) ?>
     <?= $form->field($peliculasForm, 'titulo', $inputOptions) ?>
     <?= $form->field($peliculasForm, 'anyo', $inputOptions) ?>
     <?= $form->field($peliculasForm, 'duracion', $inputOptions) ?>

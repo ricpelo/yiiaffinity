@@ -2,7 +2,8 @@
 
 namespace app\controllers;
 
-use app\models\GenerosForm;
+use app\models\Generos;
+use app\models\Peliculas;
 use Yii;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
@@ -41,15 +42,14 @@ class GenerosController extends Controller
      */
     public function actionIndex()
     {
-        $count = (new \yii\db\Query())->from('generos')->count();
+        $count = Generos::find()->count();
 
         $pagination = new Pagination([
             'defaultPageSize' => 5,
             'totalCount' => $count,
         ]);
 
-        $filas = (new \yii\db\Query())
-            ->from('generos')
+        $filas = Generos::find()
             ->orderBy('genero')
             ->limit($pagination->limit)
             ->offset($pagination->offset)
@@ -63,33 +63,23 @@ class GenerosController extends Controller
 
     public function actionCreate()
     {
-        $generosForm = new GenerosForm();
+        $genero = new Generos();
 
-        if ($generosForm->load(Yii::$app->request->post()) && $generosForm->validate()) {
-            Yii::$app->db->createCommand()
-                ->insert('generos', $generosForm->attributes)
-                ->execute();
+        if ($genero->load(Yii::$app->request->post()) && $genero->save()) {
             Yii::$app->session->setFlash('success', 'Fila insertada correctamente.');
             return $this->redirect(['generos/index']);
         }
 
         return $this->render('create', [
-            'generosForm' => $generosForm,
+            'genero' => $genero,
         ]);
     }
 
     public function actionVer($id)
     {
-        $genero = $this->buscarGenero($id);
-
-        $peliculas = (new \yii\db\Query())
-            ->from('peliculas')
-            ->where(['genero_id' => $id])
-            ->all();
-
         return $this->render('ver', [
-            'genero' => $genero,
-            'peliculas' => $peliculas,
+            'genero' => $this->buscarGenero($id),
+            'peliculas' => Peliculas::findAll(['genero_id' => $id]),
         ]);
     }
 
@@ -101,16 +91,12 @@ class GenerosController extends Controller
     public function actionUpdate($id)
     {
         $genero = $this->buscarGenero($id);
-        $generosForm = new GenerosForm(['attributes' => $genero]);
-        if ($generosForm->load(Yii::$app->request->post()) && $generosForm->validate()) {
-            Yii::$app->db->createCommand()
-                ->update('generos', $generosForm->attributes, ['id' => $id])
-                ->execute();
+        if ($genero->load(Yii::$app->request->post()) && $genero->save()) {
             Yii::$app->session->setFlash('success', 'Fila modificada correctamente.');
             return $this->redirect(['generos/index']);
         }
         return $this->render('update', [
-            'generosForm' => $generosForm,
+            'genero' => $genero,
         ]);
     }
 
@@ -121,19 +107,12 @@ class GenerosController extends Controller
      */
     public function actionDelete($id)
     {
-        $fila = (new \yii\db\Query())
-            ->select('id')
-            ->from('peliculas')
-            ->where(['genero_id' => $id])
-            ->limit(1)
-            ->one();
-        if (!empty($fila)) {
-            Yii::$app->session->setFlash('error', 'Hay películas de ese género.');
-        } else {
-            Yii::$app->db->createCommand()
-            ->delete('generos', ['id' => $id])
-            ->execute();
+        $genero = $this->buscarGenero($id);
+        if (empty($genero->peliculas)) {
+            $genero->delete();
             Yii::$app->session->setFlash('success', 'Género borrado correctamente.');
+        } else {
+            Yii::$app->session->setFlash('error', 'Hay películas de ese género.');
         }
         return $this->redirect(['generos/index']);
     }
@@ -146,11 +125,8 @@ class GenerosController extends Controller
      */
     private function buscarGenero($id)
     {
-        $genero = (new \yii\db\Query())
-            ->from('generos')
-            ->where(['id' => $id])
-            ->one();
-        if (empty($genero)) {
+        $genero = Generos::findOne($id);
+        if ($genero === null) {
             throw new NotFoundHttpException('El género no existe.');
         }
         return $genero;

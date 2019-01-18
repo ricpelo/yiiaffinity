@@ -28,23 +28,23 @@ $this->params['breadcrumbs'][] = $this->title;
         $i = 1;
         $total = 0;
         ?>
-        <?php foreach ($filas as $fila): ?>
+        <?php foreach ($peliculas as $pelicula): ?>
             <tr>
                 <td><?= $i++ ?></td>
-                <td><?= Html::a(Html::encode($fila['titulo']), ['peliculas/ver', 'id' => $fila['id']]) ?></td>
-                <td><?= Html::encode($fila['anyo']) ?></td>
-                <td><?= Html::encode($fila['duracion']) ?></td>
-                <td><?= Html::encode($fila['genero']) ?></td>
+                <td><?= Html::a(Html::encode($pelicula->titulo), ['peliculas/ver', 'id' => $pelicula->id]) ?></td>
+                <td><?= Html::encode($pelicula->anyo) ?></td>
+                <td><?= Html::encode($pelicula->duracion) ?></td>
+                <td><?= Html::encode($pelicula->genero->genero) ?></td>
                 <td>
-                    <?= Html::a('Modificar', ['peliculas/update', 'id' => $fila['id']], ['class' => 'btn-xs btn-info']) ?>
-                    <?= Html::a('Borrar', ['peliculas/delete', 'id' => $fila['id']], [
+                    <?= Html::a('Modificar', ['peliculas/update', 'id' => $pelicula->id], ['class' => 'btn-xs btn-info']) ?>
+                    <?= Html::a('Borrar', ['peliculas/delete', 'id' => $pelicula->id], [
                         'class' => 'btn-xs btn-danger',
                         'data-confirm' => '¿Seguro que desea borrar?',
                         'data-method' => 'POST',
                     ]) ?>
                 </td>
             </tr>
-            <?php $total += $fila['duracion'] ?>
+            <?php $total += $pelicula->duracion ?>
         <?php endforeach ?>
         <tr>
             <td></td>

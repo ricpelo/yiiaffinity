@@ -3,6 +3,8 @@
 namespace app\controllers;
 
 use app\models\BuscarForm;
+use app\models\Generos;
+use app\models\Peliculas;
 use app\models\PeliculasForm;
 use Yii;
 use yii\data\Sort;
@@ -31,25 +33,21 @@ class PeliculasController extends \yii\web\Controller
         ]);
 
         $buscarForm = new BuscarForm();
-
-        $query = (new \yii\db\Query())
-            ->select(['p.*', 'g.genero'])
-            ->from('peliculas p')
-            ->innerJoin('generos g', 'p.genero_id = g.id');
+        $query = Peliculas::find();
 
         if ($buscarForm->load(Yii::$app->request->post()) && $buscarForm->validate()) {
             $query->andFilterWhere(['ilike', 'titulo', $buscarForm->titulo]);
-            $query->andFilterWhere(['p.genero_id' => $buscarForm->genero_id]);
+            $query->andFilterWhere(['genero_id' => $buscarForm->genero_id]);
         }
 
         if (empty($sort->orders)) {
-            $query->orderBy(['p.id' => SORT_ASC]);
+            $query->orderBy(['id' => SORT_ASC]);
         } else {
             $query->orderBy($sort->orders);
         }
 
         return $this->render('index', [
-            'filas' => $query->all(),
+            'peliculas' => $query->all(),
             'sort' => $sort,
             'listaGeneros' => ['' => ''] + $this->listaGeneros(),
             'buscarForm' => $buscarForm,
@@ -58,72 +56,59 @@ class PeliculasController extends \yii\web\Controller
 
     public function actionCreate()
     {
-        $peliculasForm = new PeliculasForm();
+        $pelicula = new Peliculas();
 
-        if ($peliculasForm->load(Yii::$app->request->post()) && $peliculasForm->validate()) {
-            Yii::$app->db->createCommand()
-                ->insert('peliculas', $peliculasForm->attributes)
-                ->execute();
+        if ($pelicula->load(Yii::$app->request->post()) && $pelicula->save()) {
             return $this->redirect(['peliculas/index']);
         }
         return $this->render('create', [
-            'peliculasForm' => $peliculasForm,
+            'pelicula' => $pelicula,
         ]);
     }
 
     public function actionVer($id)
     {
-        $peliculasForm = new PeliculasForm(['attributes' => $this->buscarPelicula($id)]);
-        $peliculasForm->genero_id = (new \yii\db\Query())
-            ->select('genero')
-            ->from('generos')
-            ->where(['id' => $peliculasForm->genero_id])
-            ->scalar();
+        $pelicula = $this->buscarPelicula($id);
+        // $peliculasForm = new PeliculasForm(['attributes' => $pelicula->attributes]);
+        $pelicula->genero_id = $pelicula->genero->genero;
 
         return $this->render('ver', [
-            'peliculasForm' => $peliculasForm,
+            'peliculasForm' => $pelicula,
         ]);
     }
 
     public function actionUpdate($id)
     {
-        $peliculasForm = new PeliculasForm(['attributes' => $this->buscarPelicula($id)]);
+        $pelicula = $this->buscarPelicula($id);
 
-        if ($peliculasForm->load(Yii::$app->request->post()) && $peliculasForm->validate()) {
-            Yii::$app->db->createCommand()
-                ->update('peliculas', $peliculasForm->attributes, ['id' => $id])
-                ->execute();
+        if ($pelicula->load(Yii::$app->request->post()) && $pelicula->save()) {
             return $this->redirect(['peliculas/index']);
         }
 
         return $this->render('update', [
-            'peliculasForm' => $peliculasForm,
+            'pelicula' => $pelicula,
             'listaGeneros' => $this->listaGeneros(),
         ]);
     }
 
     public function actionDelete($id)
     {
-        Yii::$app->db->createCommand()->delete('peliculas', ['id' => $id])->execute();
+        $this->buscarPelicula($id)->delete();
         return $this->redirect(['peliculas/index']);
     }
 
     private function listaGeneros()
     {
-        return (new \yii\db\Query())
+        return Generos::find()
             ->select('genero')
-            ->from('generos')
             ->indexBy('id')
             ->column();
     }
 
     private function buscarPelicula($id)
     {
-        $fila = (new \yii\db\Query())
-            ->from('peliculas')
-            ->where(['id' => $id])
-            ->one();
-        if ($fila === false) {
+        $fila = Peliculas::findOne($id);
+        if ($fila === null) {
             throw new NotFoundHttpException('Esa película no existe.');
         }
         return $fila;
