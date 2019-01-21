@@ -34,6 +34,32 @@ CREATE TABLE usuarios
   , password VARCHAR(60) NOT NULL
 );
 
+DROP TABLE IF EXISTS personas CASCADE;
+
+CREATE TABLE personas
+(
+    id     BIGSERIAL    PRIMARY KEY
+  , nombre VARCHAR(255) NOT NULL
+);
+
+DROP TABLE IF EXISTS papeles CASCADE;
+
+CREATE TABLE papeles
+(
+    id    BIGSERIAL    PRIMARY KEY
+  , papel VARCHAR(255) NOT NULL UNIQUE
+);
+
+DROP TABLE IF EXISTS participaciones CASCADE;
+
+CREATE TABLE participaciones
+(
+    pelicula_id BIGINT REFERENCES peliculas (id)
+  , persona_id  BIGINT REFERENCES personas (id)
+  , papel_id    BIGINT REFERENCES papeles (id)
+  , PRIMARY KEY (pelicula_id, persona_id, papel_id)
+);
+
 -- INSERT
 
 INSERT INTO usuarios (login, password)
@@ -51,3 +77,20 @@ INSERT INTO peliculas (titulo, anyo, sinopsis, duracion, genero_id)
 VALUES ('Los últimos Jedi', 2017, 'Va uno y se cae...', 204, 3)
      , ('Los Goonies', 1985, 'Unos niños encuentran un tesoro', 120, 5)
      , ('Aquí llega Condemor', 1996, 'Mejor no cuento nada...', 90, 1);
+
+INSERT INTO personas (nombre)
+VALUES ('George Lucas')
+     , ('Santiago Segura');
+
+INSERT INTO papeles (papel)
+VALUES ('Director')
+     , ('Productor')
+     , ('Intérprete')
+     , ('Guionista');
+
+INSERT INTO participaciones (pelicula_id, persona_id, papel_id)
+VALUES (1, 1, 1)
+     , (1, 2, 3)
+     , (2, 2, 1)
+     , (2, 2, 2)
+     , (2, 1, 4);

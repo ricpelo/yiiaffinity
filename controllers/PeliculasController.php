@@ -5,7 +5,6 @@ namespace app\controllers;
 use app\models\BuscarForm;
 use app\models\Generos;
 use app\models\Peliculas;
-use app\models\PeliculasForm;
 use Yii;
 use yii\data\Sort;
 use yii\web\NotFoundHttpException;
@@ -33,7 +32,7 @@ class PeliculasController extends \yii\web\Controller
         ]);
 
         $buscarForm = new BuscarForm();
-        $query = Peliculas::find();
+        $query = Peliculas::find()->with('genero');
 
         if ($buscarForm->load(Yii::$app->request->post()) && $buscarForm->validate()) {
             $query->andFilterWhere(['ilike', 'titulo', $buscarForm->titulo]);
@@ -69,11 +68,10 @@ class PeliculasController extends \yii\web\Controller
     public function actionVer($id)
     {
         $pelicula = $this->buscarPelicula($id);
-        // $peliculasForm = new PeliculasForm(['attributes' => $pelicula->attributes]);
         $pelicula->genero_id = $pelicula->genero->genero;
 
         return $this->render('ver', [
-            'peliculasForm' => $pelicula,
+            'pelicula' => $pelicula,
         ]);
     }
 
