@@ -12,7 +12,7 @@ $inputOptions = [
 ];
 ?>
 <?php foreach ($pelicula->participaciones as $participacion): ?>
-    <dl>
+    <dl class="dl-horizontal">
         <dt>Nombre</dt>
         <dd><?= $participacion->persona->nombre ?></dd>
         <dt>Papel</dt>

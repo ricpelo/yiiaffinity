@@ -25,7 +25,11 @@ if (($url = getenv('DATABASE_URL')) !== false) {
     $dbname = 'fa';
     $username = 'fa';
     $password = 'fa';
-    $extra = [];
+    $extra = [
+        'enableSchemaCache' => true,
+        'schemaCacheDuration' => 60,
+        'schemaCache' => 'cache',
+    ];
 }
 
 return [
