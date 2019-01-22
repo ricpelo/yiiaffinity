@@ -7,18 +7,20 @@ $this->params['breadcrumbs'][] = $this->title;
 <table class="table table-striped">
     <thead>
         <th>Género</th>
+        <th>Nº de películas</th>
         <th>Acciones</th>
     </thead>
     <tbody>
         <?php foreach ($filas as $fila): ?>
             <tr>
-                <td><?= Html::encode($fila['genero']) ?></td>
+                <td><?= Html::encode($fila->genero) ?></td>
+                <td><?= Html::encode($fila->cuantas) ?></td>
                 <td>
-                    <?= Html::a('Modificar', ['generos/update', 'id' => $fila['id']], ['class' => 'btn-xs btn-info']) ?>
-                    <?= Html::a('Ver', ['generos/ver', 'id' => $fila['id']], ['class' => 'btn-xs btn-warning']) ?>
+                    <?= Html::a('Modificar', ['generos/update', 'id' => $fila->id], ['class' => 'btn-xs btn-info']) ?>
+                    <?= Html::a('Ver', ['generos/ver', 'id' => $fila->id], ['class' => 'btn-xs btn-warning']) ?>
                     <?= Html::a(
                         'Borrar',
-                        ['generos/delete', 'id' => $fila['id']],
+                        ['generos/delete', 'id' => $fila->id],
                         [
                             'class' => 'btn-xs btn-danger',
                             'data-confirm' => '¿Seguro que desea borrar el género?',
