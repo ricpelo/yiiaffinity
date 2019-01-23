@@ -7,6 +7,7 @@ use app\models\Generos;
 use app\models\Peliculas;
 use Yii;
 use yii\data\Sort;
+use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -68,10 +69,20 @@ class PeliculasController extends \yii\web\Controller
     public function actionVer($id)
     {
         $pelicula = $this->buscarPelicula($id);
-        $pelicula->genero_id = $pelicula->genero->genero;
+
+        $participantes = (new \yii\db\Query())
+            ->select(['personas.nombre', 'papeles.papel'])
+            ->from('participaciones')
+            ->innerJoin('personas', 'persona_id = personas.id')
+            ->innerJoin('papeles', 'papel_id = papeles.id')
+            ->where(['pelicula_id' => $pelicula->id])
+            ->all();
+
+        $participantes = ArrayHelper::index($participantes, null, 'papel');
 
         return $this->render('ver', [
             'pelicula' => $pelicula,
+            'participantes' => $participantes,
         ]);
     }
 
