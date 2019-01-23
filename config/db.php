@@ -22,13 +22,13 @@ if (($url = getenv('DATABASE_URL')) !== false) {
     // Configuración para entorno local:
     $host = 'localhost';
     $port = '5432';
-    $dbname = 'fa';
-    $username = 'fa';
-    $password = 'fa';
+    $dbname = 'yiiaffinity';
+    $username = 'yiiaffinity';
+    $password = 'yiiaffinity';
     $extra = [
-        'enableSchemaCache' => true,
-        'schemaCacheDuration' => 60,
-        'schemaCache' => 'cache',
+        // 'enableSchemaCache' => true,
+        // 'schemaCacheDuration' => 60,
+        // 'schemaCache' => 'cache',
     ];
 }
 
