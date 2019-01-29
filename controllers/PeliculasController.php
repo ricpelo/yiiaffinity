@@ -2,12 +2,11 @@
 
 namespace app\controllers;
 
-use app\models\BuscarForm;
 use app\models\Generos;
 use app\models\Peliculas;
+use app\models\PeliculasSearch;
 use Yii;
 use yii\data\ActiveDataProvider;
-use yii\data\Sort;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
@@ -37,36 +36,12 @@ class PeliculasController extends \yii\web\Controller
 
     public function actionIndex()
     {
-        $sort = new Sort([
-            'attributes' => [
-                'titulo',
-                'anyo',
-                'duracion',
-                'precio',
-                'created_at',
-                'genero',
-            ],
-        ]);
-
-        $buscarForm = new BuscarForm();
-        $query = Peliculas::find()->with('genero');
-
-        if ($buscarForm->load(Yii::$app->request->post()) && $buscarForm->validate()) {
-            $query->andFilterWhere(['ilike', 'titulo', $buscarForm->titulo]);
-            $query->andFilterWhere(['genero_id' => $buscarForm->genero_id]);
-        }
-
-        if (empty($sort->orders)) {
-            $query->orderBy(['id' => SORT_ASC]);
-        } else {
-            $query->orderBy($sort->orders);
-        }
+        $searchModel = new PeliculasSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->get());
 
         return $this->render('index', [
-            'peliculas' => $query->all(),
-            'sort' => $sort,
-            'listaGeneros' => ['' => ''] + $this->listaGeneros(),
-            'buscarForm' => $buscarForm,
+            'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
         ]);
     }
 

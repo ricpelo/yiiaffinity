@@ -4,7 +4,6 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Peliculas;
 
 /**
  * PeliculasSearch represents the model behind the search form of `app\models\Peliculas`.
@@ -17,9 +16,9 @@ class PeliculasSearch extends Peliculas
     public function rules()
     {
         return [
-            [['id', 'duracion', 'genero_id'], 'integer'],
-            [['titulo', 'sinopsis'], 'safe'],
-            [['anyo'], 'number'],
+            [['id', 'genero_id'], 'integer'],
+            [['titulo', 'duracion', 'sinopsis'], 'safe'],
+            [['anyo', 'precio'], 'number'],
         ];
     }
 
@@ -33,7 +32,7 @@ class PeliculasSearch extends Peliculas
     }
 
     /**
-     * Creates data provider instance with search query applied
+     * Creates data provider instance with search query applied.
      *
      * @param array $params
      *
@@ -41,7 +40,7 @@ class PeliculasSearch extends Peliculas
      */
     public function search($params)
     {
-        $query = Peliculas::find();
+        $query = Peliculas::find()->with('genero');
 
         // add conditions that should always apply here
 
@@ -61,7 +60,7 @@ class PeliculasSearch extends Peliculas
         $query->andFilterWhere([
             'id' => $this->id,
             'anyo' => $this->anyo,
-            'duracion' => $this->duracion,
+            'precio' => $this->precio,
             'genero_id' => $this->genero_id,
         ]);
 
