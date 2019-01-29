@@ -1,9 +1,20 @@
 <?php
+use yii\grid\GridView;
+use yii\grid\ActionColumn;
 use yii\helpers\Html;
 use yii\widgets\LinkPager;
 $this->title = 'Listado de géneros';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+
+<?= GridView::widget([
+    'dataProvider' => $dataProvider,
+    'columns' => [
+        'genero',
+        ['class' => ActionColumn::class],
+    ],
+]) ?>
+
 <table class="table table-striped">
     <thead>
         <th>Género</th>

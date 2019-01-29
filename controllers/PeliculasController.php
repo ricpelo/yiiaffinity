@@ -6,6 +6,7 @@ use app\models\BuscarForm;
 use app\models\Generos;
 use app\models\Peliculas;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\data\Sort;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
@@ -17,8 +18,21 @@ class PeliculasController extends \yii\web\Controller
 {
     public function actionPrueba()
     {
-        Yii::$app->session->setFlash('error', 'Esto es un error.');
-        return $this->redirect(['peliculas/index']);
+        $provider = new ActiveDataProvider([
+            'query' => Peliculas::find(),
+            'pagination' => [
+                'pageSize' => 2,
+            ],
+            'sort' => [
+                'attributes' => [
+                    'titulo',
+                    'anyo',
+                ],
+            ],
+        ]);
+        var_dump($provider->models);
+        var_dump($provider->count);
+        var_dump($provider->totalCount);
     }
 
     public function actionIndex()
@@ -28,6 +42,8 @@ class PeliculasController extends \yii\web\Controller
                 'titulo',
                 'anyo',
                 'duracion',
+                'precio',
+                'created_at',
                 'genero',
             ],
         ]);

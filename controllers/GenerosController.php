@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\Generos;
 use app\models\Peliculas;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -53,9 +54,17 @@ class GenerosController extends Controller
             ->offset($pagination->offset)
             ->all();
 
+        $dataProvider = new ActiveDataProvider([
+            'query' => Generos::find(),
+            'pagination' => [
+                'pageSize' => 2,
+            ],
+        ]);
+
         return $this->render('index', [
             'filas' => $filas,
             'pagination' => $pagination,
+            'dataProvider' => $dataProvider,
         ]);
     }
 

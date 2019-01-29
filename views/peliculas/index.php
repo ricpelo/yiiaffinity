@@ -20,6 +20,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <th><?= $sort->link('titulo') ?></th>
         <th><?= $sort->link('anyo') ?></th>
         <th><?= $sort->link('duracion') ?></th>
+        <th><?= $sort->link('precio') ?></th>
+        <th><?= $sort->link('created_at') ?></th>
         <th><?= $sort->link('genero') ?></th>
         <th>Acciones</th>
     </thead>
@@ -33,7 +35,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 <td><?= $i++ ?></td>
                 <td><?= Html::a(Html::encode($pelicula->titulo), ['peliculas/ver', 'id' => $pelicula->id]) ?></td>
                 <td><?= Html::encode($pelicula->anyo) ?></td>
-                <td><?= Html::encode($pelicula->duracion) ?></td>
+                <td><?= Yii::$app->formatter->asDuration($pelicula->duracion * 60) ?></td>
+                <td><?= Yii::$app->formatter->asCurrency($pelicula->precio) ?></td>
+                <td><?= Yii::$app->formatter->asDatetime($pelicula->created_at) ?></td>
                 <td><?= Html::encode($pelicula->genero->genero) ?></td>
                 <td>
                     <?= Html::a('Modificar', ['peliculas/update', 'id' => $pelicula->id], ['class' => 'btn-xs btn-info']) ?>
@@ -50,7 +54,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <td></td>
             <td></td>
             <td></td>
-            <td><?= Html::encode($total) ?></td>
+            <td><?= Yii::$app->formatter->asDuration($total * 60) ?></td>
         </tr>
     </tbody>
 </table>

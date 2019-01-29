@@ -1,9 +1,33 @@
 <?php
 use yii\helpers\Html;
+use yii\widgets\DetailView;
 
 $this->title = 'Ver una película';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<?= DetailView::widget([
+    'model' => $pelicula,
+    'attributes' => [
+        'titulo',
+        'anyo',
+        [
+            'label' => 'Duración',
+            'value' => $pelicula->duracion * 60,
+            'format' => 'duration',
+        ],
+        'created_at:datetime',
+        'precio:currency',
+    ],
+]) ?>
+
+
+
+
+
+
+
+
+
 <dl class="dl-horizontal">
     <dt>Título</dt>
     <dd><?= Html::encode($pelicula->titulo) ?></dd>
