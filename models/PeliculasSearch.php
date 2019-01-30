@@ -17,9 +17,14 @@ class PeliculasSearch extends Peliculas
     {
         return [
             [['id', 'genero_id'], 'integer'],
-            [['titulo', 'duracion', 'sinopsis'], 'safe'],
+            [['titulo', 'duracion', 'sinopsis', 'genero.genero'], 'safe'],
             [['anyo', 'precio'], 'number'],
         ];
+    }
+
+    public function attributes()
+    {
+        return array_merge(parent::attributes(), ['genero.genero']);
     }
 
     /**
@@ -40,13 +45,18 @@ class PeliculasSearch extends Peliculas
      */
     public function search($params)
     {
-        $query = Peliculas::find()->with('genero');
+        $query = Peliculas::find()->joinWith('genero');
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
+
+        $dataProvider->sort->attributes['genero.genero'] = [
+            'asc' => ['generos.genero' => SORT_ASC],
+            'desc' => ['generos.genero' => SORT_DESC],
+        ];
 
         $this->load($params);
 
@@ -65,7 +75,8 @@ class PeliculasSearch extends Peliculas
         ]);
 
         $query->andFilterWhere(['ilike', 'titulo', $this->titulo])
-            ->andFilterWhere(['ilike', 'sinopsis', $this->sinopsis]);
+            ->andFilterWhere(['ilike', 'sinopsis', $this->sinopsis])
+            ->andFilterWhere(['ilike', 'generos.genero', $this->getAttribute('genero.genero')]);
 
         return $dataProvider;
     }
