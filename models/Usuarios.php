@@ -120,8 +120,19 @@ class Usuarios extends \yii\db\ActiveRecord implements IdentityInterface
             return false;
         }
 
-        $this->password = Yii::$app->security
-            ->generatePasswordHash($this->password);
+        if ($insert) {
+            if ($this->scenario === self::SCENARIO_CREATE) {
+                goto salto;
+            }
+        } elseif ($this->scenario === self::SCENARIO_UPDATE) {
+            if ($this->password === '') {
+                $this->password = $this->getOldAttribute('password');
+            } else {
+                salto:
+                $this->password = Yii::$app->security
+                    ->generatePasswordHash($this->password);
+            }
+        }
 
         return true;
     }

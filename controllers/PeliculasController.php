@@ -7,14 +7,45 @@ use app\models\Peliculas;
 use app\models\PeliculasSearch;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
+use yii\widgets\ActiveForm;
 
 /**
  * Definición del controlador peliculas.
  */
 class PeliculasController extends \yii\web\Controller
 {
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['index', 'view'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index'],
+                        'roles' => ['@'],
+                        'matchCallback' => function ($rule, $action) {
+                            return Yii::$app->user->identity->login === 'admin';
+                        },
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['view'],
+                        'roles' => ['@'],
+                        'matchCallback' => function ($rule, $action) {
+                            return Yii::$app->request->get('id') == 1;
+                        },
+                    ],
+                ],
+            ],
+        ];
+    }
+
     public function actionPrueba()
     {
         $provider = new ActiveDataProvider([
@@ -49,12 +80,22 @@ class PeliculasController extends \yii\web\Controller
     {
         $pelicula = new Peliculas();
 
+        if (Yii::$app->request->isAjax && $pelicula->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($pelicula);
+        }
+
         if ($pelicula->load(Yii::$app->request->post()) && $pelicula->save()) {
             return $this->redirect(['peliculas/index']);
         }
         return $this->render('create', [
             'pelicula' => $pelicula,
         ]);
+    }
+
+    public function actionView($id)
+    {
+        return $this->actionVer($id);
     }
 
     public function actionVer($id)

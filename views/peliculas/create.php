@@ -11,7 +11,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $form->field($pelicula, 'anyo') ?>
     <?= $form->field($pelicula, 'sinopsis')->textarea() ?>
     <?= $form->field($pelicula, 'duracion') ?>
-    <?= $form->field($pelicula, 'genero_id') ?>
+    <?= $form->field($pelicula, 'genero_id', ['enableAjaxValidation' => true]) ?>
     <div class="form-group">
         <?= Html::submitButton('Insertar película', ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Cancelar', ['peliculas/index'], ['class' => 'btn btn-danger']) ?>
