@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\ContactForm;
+use app\models\ListasForm;
 use app\models\LoginForm;
 use Yii;
 use yii\filters\AccessControl;
@@ -147,5 +148,38 @@ class SiteController extends Controller
             return Yii::$app->request->post('numero') * 2;
         }
         throw new MethodNotAllowedHttpException('Debe ser AJAX');
+    }
+
+    public function actionEjemploListas()
+    {
+        $listasForm = new ListasForm();
+        return $this->render('ejemplo-listas', [
+            'listasForm' => $listasForm,
+            'provincias' => $this->getProvincias(),
+            'municipios' => [],
+        ]);
+    }
+
+    public function actionMunicipios($provincia)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        if ($provincia === 'CA') {
+            return ['', 'Sanlúcar', 'Jerez', 'Puerto Real', 'Chipiona'];
+        } elseif ($provincia === 'SE') {
+            return ['', 'Sevilla', 'Dos Hermanas', 'El Cuervo', 'Camas'];
+        } elseif ($provincia === 'HU') {
+            return ['', 'Huelva', 'Palos', 'Moguer', 'Lepe'];
+        }
+        return [];
+    }
+
+    private function getProvincias()
+    {
+        return [
+            '' => '',
+            'CA' => 'Cádiz',
+            'SE' => 'Sevilla',
+            'HU' => 'Huelva',
+        ];
     }
 }

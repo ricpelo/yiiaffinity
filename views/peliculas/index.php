@@ -11,9 +11,8 @@ use yii\web\View;
 $this->title = 'Listado de películas';
 $this->params['breadcrumbs'][] = $this->title;
 $js = <<<EOF
-    $('#boton').click(function (ev) {
-        ev.preventDefault();
-        alert('hola');
+    $('tr').click(function (ev) {
+        alert($(this).data('key'));
     });
 EOF;
 $this->registerJs($js);
