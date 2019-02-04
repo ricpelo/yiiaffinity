@@ -8,6 +8,7 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
+use yii\web\MethodNotAllowedHttpException;
 use yii\web\Response;
 
 class SiteController extends Controller
@@ -141,7 +142,10 @@ class SiteController extends Controller
     // ID de la acción: dame-numero
     public function actionDameNumero()
     {
-        Yii::$app->response->format = Response::FORMAT_JSON;
-        return rand();
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return Yii::$app->request->post('numero') * 2;
+        }
+        throw new MethodNotAllowedHttpException('Debe ser AJAX');
     }
 }
