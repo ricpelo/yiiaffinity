@@ -132,4 +132,16 @@ class SiteController extends Controller
             'nombre' => $nombre,
         ]);
     }
+
+    public function actionAjax()
+    {
+        return $this->render('ajax');
+    }
+
+    // ID de la acción: dame-numero
+    public function actionDameNumero()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        return rand();
+    }
 }
