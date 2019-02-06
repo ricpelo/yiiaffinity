@@ -5,7 +5,6 @@ use yii\grid\ActionColumn;
 use yii\grid\SerialColumn;
 use kartik\number\NumberControl;
 use yii\helpers\Html;
-
 use yii\web\View;
 
 $this->title = 'Listado de películas';
