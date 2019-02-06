@@ -7,8 +7,10 @@
 
 namespace app\commands;
 
+use app\models\Usuarios;
 use yii\console\Controller;
 use yii\console\ExitCode;
+use yii\helpers\Console;
 
 /**
  * This command echoes the first argument that you have entered.
@@ -21,14 +23,38 @@ use yii\console\ExitCode;
 class HelloController extends Controller
 {
     /**
-     * This command echoes what you have entered as the message.
+     * Este comando saluda al usuario.
      * @param string $message the message to be echoed.
+     * @param mixed $persona
      * @return int Exit code
      */
-    public function actionIndex($message = 'hello world')
+    public function actionIndex($message = 'hello world', $persona = 'Ricardo')
     {
-        echo $message . "\n";
+        echo "$message $persona\n";
 
+        return ExitCode::OK;
+    }
+
+    /**
+     * Elimina usuarios que no se conectan desde hace más de 90 días.
+     * @return int Código de salida
+     */
+    public function actionLimpiar()
+    {
+        $pasado = new \DateTime();
+        $pasado = $pasado
+            ->sub(new \DateInterval('P1D'))
+            ->format('Y-m-d H:i:s');
+        $numero = Usuarios::deleteAll(['<', 'created_at', $pasado]);
+        echo "Se han borrado $numero filas.\n";
+        $this->stdout("Hello?\n", Console::BOLD);
+        echo \yii\console\widgets\Table::widget([
+            'headers' => ['Project', 'Status', 'Participant'],
+            'rows' => [
+                ['Yii', 'OK', '@samdark'],
+                ['Yii', 'OK', '@cebe'],
+            ],
+        ]);
         return ExitCode::OK;
     }
 }
