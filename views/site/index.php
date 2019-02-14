@@ -7,8 +7,7 @@ $this->title = 'My Yii Application';
 <div class="site-index">
 
     <div class="jumbotron">
-        <?= Html::img('@uploads/yii_logo_light.png') ?>
-        <h1>Congratulations!</h1>
+        <h1>¡Felicidades!</h1>
 
         <p class="lead">You have successfully created your Yii-powered application.</p>
 
