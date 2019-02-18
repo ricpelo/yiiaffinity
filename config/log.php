@@ -9,7 +9,7 @@ if (YII_ENV_PROD) {
     $out['targets'] = [
         [
             'class' => 'app\components\HerokuTarget',
-            'levels' => ['error', 'warning', 'info'],
+            'levels' => ['error', 'warning'],
             'exportInterval' => 1,
             'logVars' => [],
         ],
